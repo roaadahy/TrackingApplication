@@ -267,7 +267,7 @@ public class FragmentMap extends Fragment {
                             type = root.getString("type");
                             if (type.equals("bin")) {
                                 position = root.getInt("position");
-                                FirstActivity.sharedPreferences.edit().putInt("position", position + 1).apply();
+                                FirstActivity.sharedPreferences.edit().putInt("position", position).apply();
                             }
                             FirstActivity.sharedPreferences.edit().putInt("ID", ID).apply();
                             FirstActivity.sharedPreferences.edit().putString("type", type).apply();

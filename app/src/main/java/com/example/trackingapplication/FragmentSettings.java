@@ -31,6 +31,7 @@ import java.net.URL;
 public class FragmentSettings extends Fragment {
     int truckID, truckCapacity, truckType;
     String latitude, longitude;
+    GpsTracker gpsTracker;
     private static final int STATE_UPDATE_INTERVAL = 60000;
     private Handler handler = new Handler();
     private Runnable runnable;
@@ -66,7 +67,7 @@ public class FragmentSettings extends Fragment {
                     FirstActivity.sharedPreferences.edit().putInt("capacity", truckCapacity).apply();
                     FirstActivity.sharedPreferences.edit().putInt("truckType", truckType).apply();
 
-                    GpsTracker gpsTracker = new GpsTracker(getActivity());
+                    gpsTracker = new GpsTracker(getActivity());
                     latitude = String.valueOf(gpsTracker.getLatitude());
                     FirstActivity.sharedPreferences.edit().putString("latitude", latitude).apply();
                     longitude = String.valueOf(gpsTracker.getLongitude());

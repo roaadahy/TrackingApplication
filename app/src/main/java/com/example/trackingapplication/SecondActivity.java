@@ -154,7 +154,7 @@ public class SecondActivity extends AppCompatActivity {
                     jsonObject.put("position", FirstActivity.sharedPreferences.getInt("position", 0) + 1);
                 } else if (FirstActivity.sharedPreferences.getString("type", "").equals("Claim")) {
                     jsonObject.put("truck_ID", FirstActivity.sharedPreferences.getInt("truck_ID", 0));
-                    jsonObject.put("claimID", FirstActivity.sharedPreferences.getInt("ID", 0));
+                    jsonObject.put("ID", FirstActivity.sharedPreferences.getInt("ID", 0));
                     jsonObject.put("position", FirstActivity.sharedPreferences.getInt("position", 0) + 1);
                 } else {
                     System.out.println("No defined type");
@@ -182,9 +182,15 @@ public class SecondActivity extends AppCompatActivity {
                             responseCode = -2;
                         } else {
                             responseCode = 1;
+                            if (FirstActivity.sharedPreferences.getBoolean("isRerouted", false)) {
+                                FirstActivity.sharedPreferences.edit().putBoolean("isRerouted", false).apply();
+                            }
                         }
                     } else if (numberResponse.contains("\"Code\":-1")) {
                         responseCode = -1;
+                        if (FirstActivity.sharedPreferences.getBoolean("isRerouted", false)) {
+                            FirstActivity.sharedPreferences.edit().putBoolean("isRerouted", false).apply();
+                        }
                     } else {
                         responseCode = 0;
                     }

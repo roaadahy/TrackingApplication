@@ -147,10 +147,6 @@ public class FirstActivity extends Activity {
                 jsonObject.put("current_long", longitude);
                 jsonObject.put("type", truckType);
 
-                System.out.println(latitude);
-                System.out.println(longitude);
-
-
                 DataOutputStream write = new DataOutputStream(httpURLConnection.getOutputStream());
                 write.writeBytes(jsonObject.toString());
                 write.flush();
@@ -164,7 +160,7 @@ public class FirstActivity extends Activity {
                         jsonResponse.append(responseLine.trim());
                     }
 
-                    System.out.println(jsonResponse.toString());
+                    System.out.println("Start up Response: " + jsonResponse.toString());
 
                     String numberResponse;
                     numberResponse = jsonResponse.toString();
