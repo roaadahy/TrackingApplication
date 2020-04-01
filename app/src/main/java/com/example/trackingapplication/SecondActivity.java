@@ -51,7 +51,6 @@ public class SecondActivity extends AppCompatActivity {
         drawerLayout = findViewById(R.id.drawer_layout);
 
         slideMenu = new ArrayList<>();
-        slideMenu.add(new ItemSlideMenu(R.drawable.ic_location, "Map"));
         slideMenu.add(new ItemSlideMenu(R.drawable.ic_settings, "Settings"));
         slideMenu.add(new ItemSlideMenu(R.drawable.ic_clear, "Clear"));
 
@@ -62,12 +61,12 @@ public class SecondActivity extends AppCompatActivity {
 
         listViewSliding.setItemChecked(0, true);
         drawerLayout.closeDrawer(listViewSliding);
-        replaceFragment(0);
+        replaceFragment(2);
 
         listViewSliding.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (position == 2) {
+                if (position == 1) {
                     AsyncT asyncT = new AsyncT();
                     asyncT.execute();
                 } else {
@@ -113,13 +112,10 @@ public class SecondActivity extends AppCompatActivity {
     private void replaceFragment(int position) {
         Fragment fragment;
 
-        switch (position) {
-            case 1:
-                fragment = new FragmentSettings();
-                break;
-            default:
-                fragment = new FragmentMap();
-                break;
+        if (position == 0) {
+            fragment = new FragmentSettings();
+        } else {
+            fragment = new FragmentMap();
         }
 
         if (fragment != null) {
