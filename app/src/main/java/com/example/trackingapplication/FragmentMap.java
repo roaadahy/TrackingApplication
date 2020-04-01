@@ -134,24 +134,47 @@ public class FragmentMap extends Fragment {
             if (polyline != null) {
                 polyline.remove();
             }
-
-
-
-
-            if (FirstActivity.sharedPreferences.getBoolean("isRerouted", false)) {
-                location2 = new LatLng(Double.parseDouble(FirstActivity.sharedPreferences.getString("latitude", "")),
-                        Double.parseDouble(FirstActivity.sharedPreferences.getString("longitude", "")));
-            }
             String url = getDirectionsUrl(updatedLocation, location2);
             DownloadTask downloadTask = new DownloadTask();
             downloadTask.execute(url);
             latitude = gpsTracker.getLatitude();
             longitude = gpsTracker.getLongitude();
+        }
 
+        if (FirstActivity.sharedPreferences.getBoolean("isRerouted", false)) {
+            googleMap.clear();
+            mMapView.getMapAsync(new OnMapReadyCallback() {
+                @Override
+                public void onMapReady(GoogleMap mMap) {
+                    googleMap = mMap;
 
+                    GpsTracker gpsTracker = new GpsTracker(getActivity());
+                    LatLng location = new LatLng(gpsTracker.getLatitude(), gpsTracker.getLongitude());
+                    currentLocation = new MarkerOptions().position(location).title("Location 1")
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_truck_indigo));
+                    currentMarker = googleMap.addMarker(currentLocation);
 
+                    location2 = new LatLng(Double.parseDouble(FirstActivity.sharedPreferences.getString("latitude", "")),
+                            Double.parseDouble(FirstActivity.sharedPreferences.getString("longitude", "")));
 
+                    nextLocation = new MarkerOptions().position(location2).title("Location 2")
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place_indigo));
+                    googleMap.addMarker(nextLocation);
 
+                    CameraPosition cameraPosition1 = new CameraPosition.Builder().target(location1).zoom(12).build();
+                    googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition1));
+
+                    CameraPosition cameraPosition2 = new CameraPosition.Builder().target(location2).zoom(12).build();
+                    googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition2));
+
+                    String url = getDirectionsUrl(location, location2);
+                    DownloadTask downloadTask = new DownloadTask();
+                    downloadTask.execute(url);
+                    latitude = gpsTracker.getLatitude();
+                    longitude = gpsTracker.getLongitude();
+                    FirstActivity.sharedPreferences.edit().putBoolean("isRerouted", false).apply();
+                }
+            });
         }
 
         if (FirstActivity.sharedPreferences.getBoolean("hasNext", false)) {

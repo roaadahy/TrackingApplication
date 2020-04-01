@@ -3,6 +3,7 @@ package com.example.trackingapplication;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,6 +14,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,6 +33,7 @@ public class FirstActivity extends Activity {
     int truckID, truckCapacity, truckType;
     String latitude, longitude;
     static SharedPreferences sharedPreferences;
+    GpsTracker gpsTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +58,15 @@ public class FirstActivity extends Activity {
         sharedPreferences.getBoolean("isRerouted", false);
         sharedPreferences.getBoolean("isStartedAgain", false);
 
+        try {
+            if (ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 101);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         if (isFirstRun) {
             setContentView(R.layout.settings_activity);
@@ -62,20 +75,21 @@ public class FirstActivity extends Activity {
             final EditText truckCapacity_edit_txt = findViewById(R.id.truck_capacity);
             final EditText truckType_edit_txt = findViewById(R.id.truck_type);
 
-            GpsTracker gpsTracker = new GpsTracker(FirstActivity.this);
-            if (gpsTracker.canGetLocation()) {
-                latitude = String.valueOf(gpsTracker.getLatitude());
-                sharedPreferences.edit().putString("latitude", latitude).apply();
-                longitude = String.valueOf(gpsTracker.getLongitude());
-                sharedPreferences.edit().putString("longitude", longitude).apply();
-            } else {
-                gpsTracker.showSettingsAlert();
-            }
 
             Button save_btn = findViewById(R.id.save_btn);
             save_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    gpsTracker = new GpsTracker(FirstActivity.this);
+
+                    if (gpsTracker.canGetLocation()) {
+                        latitude = String.valueOf(gpsTracker.getLatitude());
+                        sharedPreferences.edit().putString("latitude", latitude).apply();
+                        longitude = String.valueOf(gpsTracker.getLongitude());
+                        sharedPreferences.edit().putString("longitude", longitude).apply();
+                    } else {
+                        gpsTracker.showSettingsAlert();
+                    }
 
                     if (truckID_edit_txt.getText().toString().length() == 0 ||
                             truckCapacity_edit_txt.getText().toString().length() == 0 ||
@@ -132,6 +146,10 @@ public class FirstActivity extends Activity {
                 jsonObject.put("current_lat", latitude);
                 jsonObject.put("current_long", longitude);
                 jsonObject.put("type", truckType);
+
+                System.out.println(latitude);
+                System.out.println(longitude);
+
 
                 DataOutputStream write = new DataOutputStream(httpURLConnection.getOutputStream());
                 write.writeBytes(jsonObject.toString());

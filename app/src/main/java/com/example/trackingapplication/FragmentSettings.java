@@ -130,7 +130,7 @@ public class FragmentSettings extends Fragment {
                 jsonObject.put("current_long", Double.valueOf(FirstActivity.sharedPreferences.getString("longitude", "")));
                 jsonObject.put("capacity", FirstActivity.sharedPreferences.getInt("capacity", 0));
                 jsonObject.put("type", FirstActivity.sharedPreferences.getInt("truckType", 0));
-                jsonObject.put("ReqType", FirstActivity.sharedPreferences.getString("type", ""));
+                jsonObject.put("reqType", FirstActivity.sharedPreferences.getString("type", ""));
 
                 DataOutputStream write = new DataOutputStream(httpURLConnection.getOutputStream());
                 write.writeBytes(jsonObject.toString());
@@ -156,34 +156,22 @@ public class FragmentSettings extends Fragment {
                             responseCode = 1;
                             FirstActivity.sharedPreferences.edit().putBoolean("isFull", false).apply();
                         }
-
                     } else if (numberResponse.contains("\"Code\":-1")) {
                         responseCode = -1;
                         FirstActivity.sharedPreferences.edit().putBoolean("isFull", true).apply();
                         JSONObject root = new JSONObject(jsonResponse.toString());
                         FirstActivity.sharedPreferences.edit().putString("baseLatitude", String.valueOf(root.getDouble("baseLat"))).apply();
                         FirstActivity.sharedPreferences.edit().putString("baseLongitude", String.valueOf(root.getDouble("baseLong"))).apply();
-
-
-
-
-
-
                     } else if (numberResponse.contains("\"Code\":2")) {
-                        FirstActivity.sharedPreferences.edit().putInt("position",
-                                ((FirstActivity.sharedPreferences.getInt("position", 0)) - 1 )).apply();
+                        responseCode = 2;
+                        int position = FirstActivity.sharedPreferences.getInt("position", 0);
+                        FirstActivity.sharedPreferences.edit().putInt("position", position - 1).apply();
                         JSONObject root = new JSONObject(jsonResponse.toString());
                         FirstActivity.sharedPreferences.edit().putString("latitude", String.valueOf(root.getDouble("lat"))).apply();
                         FirstActivity.sharedPreferences.edit().putString("longitude", String.valueOf(root.getDouble("long"))).apply();
                         FirstActivity.sharedPreferences.edit().putInt("ID", root.getInt("ID")).apply();
+                        FirstActivity.sharedPreferences.edit().putString("type", "Claim").apply();
                         FirstActivity.sharedPreferences.edit().putBoolean("isRerouted", true).apply();
-
-
-
-
-
-
-
                     } else {
                         responseCode = 0;
                         FirstActivity.sharedPreferences.edit().putBoolean("isFull", false).apply();
@@ -210,7 +198,7 @@ public class FragmentSettings extends Fragment {
             } else if (responseCode == -2) {
                 Toast.makeText(getActivity(), "Full Not Cleared", Toast.LENGTH_LONG).show();
             } else if (responseCode == 2) {
-                Toast.makeText(getActivity(), "Decrement Position", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Claim", Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
             }
